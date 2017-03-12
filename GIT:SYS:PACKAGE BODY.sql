@@ -26,7 +26,7 @@ IS
 
     PROCEDURE save( name VARCHAR2, owner VARCHAR2, type VARCHAR2, source CLOB )
     IS BEGIN
-        dbms_xslprocessor.clob2file( source, srcDirName, srcFilename(name,owner,type));
+        dbms_xslprocessor.clob2file( source||CHR(10), srcDirName, srcFilename(name,owner,type));
     END save;
 
     FUNCTION run( customArgs args ) RETURN CLOB
