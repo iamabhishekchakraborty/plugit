@@ -1,8 +1,7 @@
 # PLUGIT - PL/sql Under GIT
 PL/SQL utilities to Git version control your Oracle source code
 
-Warning
- This utilities are currently in development and aren't ready for production.
+**Warning - These utilities are currently in development and aren't ready for production.**
 
 Current features:
  - Uses Bash shell scripts (to get Git stdout/stderr messages)
