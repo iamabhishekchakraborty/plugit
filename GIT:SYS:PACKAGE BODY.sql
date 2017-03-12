@@ -1,6 +1,6 @@
 CREATE OR REPLACE PACKAGE BODY git
 IS
-    gitBinPath CONSTANT VARCHAR2(400) := '/usr/bin/git';
+    gitBinPath CONSTANT VARCHAR2(400) := 'git';
     srcDirName CONSTANT all_directories.directory_name%TYPE := 'VERSION_CONTROL';
     srcDirPath all_directories.directory_path%TYPE;
     gitWrapper gitScript.config; 
