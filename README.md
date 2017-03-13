@@ -1,3 +1,6 @@
+# SonarQube metrics
+[SonarQube Dashboard](https://sonarqube.com/dashboard?id=plugit_plsql_under_git)
+
 # PLUGIT - PL/sql Under GIT
 PL/SQL utilities to Git version control your Oracle source code
 
