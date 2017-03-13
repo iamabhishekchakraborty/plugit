@@ -1,0 +1,2 @@
+script:
+  - sonar-scanner
