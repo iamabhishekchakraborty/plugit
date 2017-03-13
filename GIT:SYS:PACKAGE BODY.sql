@@ -59,8 +59,8 @@ IS
             END IF;
         END LOOP;
 
-        BEGIN dbms_scheduler.run_job ('git_run'); EXCEPTION WHEN OTHERS THEN NULL; END;
-        BEGIN dbms_scheduler.drop_job('git_run'); EXCEPTION WHEN OTHERS THEN NULL; END;
+        dbms_scheduler.run_job ('git_run');
+        dbms_scheduler.drop_job('git_run');
 
         stdout :=   '******** debug *****************'
         ||CHR(10)|| DBMS_XSLPROCESSOR.READ2CLOB(flocation => srcDirName,fname => outputFile||'_debug')
