@@ -4,11 +4,11 @@ ON DATABASE
 DECLARE
     FUNCTION source_clob RETURN CLOB
     IS
-        sourceFragmnent ora_name_list_t;
+        source_fragmnent ora_name_list_t;
         source_code CLOB;
     BEGIN
-        FOR i IN 1..ora_sql_txt(sourceFragmnent)
-        LOOP source_code := source_code || sourceFragmnent(i);
+        FOR i IN 1..ora_sql_txt(source_fragmnent)
+        LOOP source_code := source_code || source_fragmnent(i);
         END LOOP;
         source_code := SUBSTR( source_code, 1, DBMS_LOB.getLength(source_code)-1 );
 
