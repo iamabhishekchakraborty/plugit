@@ -1,2 +1,5 @@
+addons:
+  sonarqube
+
 script:
   - sonar-scanner
