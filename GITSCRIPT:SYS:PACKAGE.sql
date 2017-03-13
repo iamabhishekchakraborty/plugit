@@ -1,9 +1,9 @@
-CREATE OR REPLACE PACKAGE gitScript
+CREATE OR REPLACE PACKAGE gitscript
 IS
     TYPE config IS RECORD (
-      scriptFile VARCHAR2(40) DEFAULT 'gitWrapper'
+      script_file VARCHAR2(40) DEFAULT 'git_wrapper'
     , job_action VARCHAR2(400)
-    , scriptCode CLOB
+    , script_code CLOB
     );
-    FUNCTION sh( gitBin VARCHAR2, workingDir all_directories.directory_path%TYPE ) RETURN gitScript.config;
-END gitScript;
+    FUNCTION sh( git_bin VARCHAR2, working_dir all_directories.directory_path%TYPE ) RETURN gitscript.config;
+END gitscript;

@@ -9,5 +9,5 @@ IS
     FUNCTION commit ( message VARCHAR2 ) RETURN CLOB;
     FUNCTION add    ( name VARCHAR2, owner VARCHAR2, type VARCHAR2 ) RETURN CLOB;
     FUNCTION rm     ( name VARCHAR2, owner VARCHAR2, type VARCHAR2 ) RETURN CLOB;
-    FUNCTION run    ( customArgs args ) RETURN CLOB;
+    FUNCTION run    ( custom_args args ) RETURN CLOB;
 END git;

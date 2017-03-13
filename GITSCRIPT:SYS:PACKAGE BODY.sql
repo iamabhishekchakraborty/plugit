@@ -1,18 +1,18 @@
-CREATE OR REPLACE PACKAGE BODY gitScript
+CREATE OR REPLACE PACKAGE BODY gitscript
 IS
-    FUNCTION sh( gitBin VARCHAR2, workingDir all_directories.directory_path%TYPE ) RETURN gitScript.config
-    IS  ret gitScript.config;
+    FUNCTION sh( git_bin VARCHAR2, working_dir all_directories.directory_path%TYPE ) RETURN gitscript.config
+    IS  ret gitscript.config;
     BEGIN
         ret.job_action := '/bin/sh';
-        ret.scriptCode :=
+        ret.script_code :=
 '#!/bin/sh
 outputFile=$1
 debugText="$@"
 shift
-outputText=$('||gitBin||' "$@" 2>'||chr(38)||'1)
-echo "$outputText" > '||workingDir||'"$outputFile" 
-echo "$debugText"  > '||workingDir||'"$outputFile"_debug
+outputText=$('||git_bin||' "$@" 2>'||chr(38)||'1)
+echo "$outputText" > '||working_dir||'"$outputFile" 
+echo "$debugText"  > '||working_dir||'"$outputFile"_debug
 ';
         RETURN ret;
     END sh;
-END gitScript;
+END gitscript;
