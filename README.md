@@ -7,6 +7,7 @@ PL/SQL utilities to Git version control your Oracle source code
 **Warning - These utilities are currently in development and aren't ready for production.**
 
 # Current features:
+ - Fully OracleXE 11g compatible
  - Auto initialize Git repository and required scripts (or call git.init on-demand)
  - Uses Bash shell scripts (to get Git stdout/stderr messages)
  - Convention over configuration
@@ -21,6 +22,7 @@ PL/SQL utilities to Git version control your Oracle source code
  - Call any Git command via the git.run function
 
 # Future work:
+ - Test older versions of OracleDB for compatibility issues
  - Add support for other Shells and Operating Systems
  - Provide a mechanism to easily clone an existing repository
  - Think of a better repository structure and filenaming conventions
