@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE BODY git
+create or replace PACKAGE BODY git
 IS
     git_bin_path CONSTANT VARCHAR2(400) := 'git';
     src_dir_name CONSTANT all_directories.directory_name%TYPE := 'VERSION_CONTROL';
@@ -29,6 +29,29 @@ IS
         dbms_xslprocessor.clob2file( source||CHR(10), src_dir_name, src_filename(name,owner,type));
     END save;
 
+    PROCEDURE load( filename VARCHAR2 )
+    IS sourcecode CLOB;
+    BEGIN
+        sourcecode := DBMS_XSLPROCESSOR.READ2CLOB(flocation => src_dir_name,fname => filename);
+        EXECUTE IMMEDIATE( sourcecode );
+    END load;
+
+    FUNCTION list RETURN git.files
+    IS  ret git.files := git.files();
+        next_newline_char NUMBER;
+        all_tracked_files CLOB := git.run(git.args('ls-tree','--full-tree','-r', '--name-only', 'HEAD'));
+    BEGIN
+        LOOP
+            next_newline_char := INSTR(all_tracked_files, CHR(10));
+            EXIT WHEN next_newline_char = 0;
+
+            ret.EXTEND;
+            ret(ret.COUNT)    := SUBSTR( all_tracked_files,1,next_newline_char);
+            all_tracked_files := SUBSTR( all_tracked_files,  next_newline_char+1 );
+        END LOOP;
+        RETURN ret;
+    END list;
+
     FUNCTION run( custom_args args ) RETURN CLOB
     IS
         output_file CONSTANT VARCHAR2(250) := 'output'||'_'||TO_CHAR(SYSDATE,'YYYYMMDD_HH:MI:SS')||'_'||SYS_CONTEXT('USERENV', 'SESSIONID');
@@ -43,6 +66,8 @@ IS
 
         stdout CLOB;
     BEGIN
+        DBMS_SCHEDULER.DROP_JOB('git_run');
+
         DBMS_SCHEDULER.CREATE_JOB
         ( job_name            => 'git_run'
         , job_type            => 'EXECUTABLE'
@@ -59,13 +84,9 @@ IS
             END IF;
         END LOOP;
 
-        dbms_scheduler.run_job ('git_run');
-        dbms_scheduler.drop_job('git_run');
+        DBMS_SCHEDULER.RUN_JOB('git_run');
 
-        stdout :=   '******** debug *****************'
-        ||CHR(10)|| DBMS_XSLPROCESSOR.READ2CLOB(flocation => src_dir_name,fname => output_file||'_debug')
-        ||CHR(10)|| '********************************'
-        ||CHR(10)|| DBMS_XSLPROCESSOR.READ2CLOB(flocation => src_dir_name,fname => output_file);
+        stdout := DBMS_XSLPROCESSOR.READ2CLOB(flocation => src_dir_name,fname => output_file);
 
         UTL_FILE.FREMOVE(src_dir_name,output_file||'_debug');
         UTL_FILE.FREMOVE(src_dir_name,output_file);

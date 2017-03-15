@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE gitscript
+create or replace PACKAGE gitscript
 IS
     TYPE config IS RECORD (
       script_file VARCHAR2(40) DEFAULT 'git_wrapper'

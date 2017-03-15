@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE BODY gitscript
+create or replace PACKAGE BODY gitscript
 IS
     FUNCTION sh( git_bin VARCHAR2, working_dir all_directories.directory_path%TYPE ) RETURN gitscript.config
     IS  ret gitscript.config;

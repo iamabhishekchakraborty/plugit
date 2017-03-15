@@ -1,7 +1,11 @@
-CREATE OR REPLACE PACKAGE git
+create or replace PACKAGE git
 IS
-    TYPE args IS VARRAY(40) OF VARCHAR2(400);
-    PROCEDURE save   ( name VARCHAR2, owner VARCHAR2, type VARCHAR2, source CLOB );
+    TYPE files  IS TABLE OF VARCHAR2(400);
+    TYPE args   IS VARRAY(40) OF VARCHAR2(400);
+
+    PROCEDURE save  ( name VARCHAR2, owner VARCHAR2, type VARCHAR2, source CLOB );
+    PROCEDURE load  ( filename VARCHAR2 );
+    FUNCTION  list RETURN git.files;
 
     FUNCTION status RETURN CLOB;
     FUNCTION init   RETURN CLOB;
