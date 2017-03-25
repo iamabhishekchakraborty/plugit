@@ -113,15 +113,18 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
 
         stdout CLOB;
  
+        custom_job_name CONSTANT VARCHAR2(20) := 'custom_os_command';
         job_doesnt_exist EXCEPTION;
         PRAGMA EXCEPTION_INIT( job_doesnt_exist, -27475 );
     BEGIN
-        BEGIN DBMS_SCHEDULER.DROP_JOB('custom_os_command');
-        EXCEPTION WHEN job_doesnt_exist THEN NULL;
+        BEGIN
+            DBMS_SCHEDULER.DROP_JOB(custom_job_name);
+        EXCEPTION WHEN job_doesnt_exist
+        THEN debug := debug || CHR(10) || 'The job doesn''t exists. We don''t need to drop it';
         END;
 
         DBMS_SCHEDULER.CREATE_JOB
-        ( job_name            => 'custom_os_command'
+        ( job_name            => custom_job_name
         , job_type            => 'EXECUTABLE'
         , job_action          =>  shell(directory)
         , auto_drop           => TRUE
@@ -129,16 +132,13 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
         );
 
         FOR i IN 1..all_args.COUNT
-        LOOP  DBMS_SCHEDULER.SET_JOB_ARGUMENT_VALUE( 'custom_os_command', i, all_args(i));
+        LOOP  DBMS_SCHEDULER.SET_JOB_ARGUMENT_VALUE( custom_job_name, i, all_args(i));
               debug := debug || ' ' || all_args(i);
         END LOOP;
 
-        DBMS_SCHEDULER.RUN_JOB('custom_os_command');
+        DBMS_SCHEDULER.RUN_JOB(custom_job_name);
 
         stdout := DBMS_XSLPROCESSOR.READ2CLOB(flocation => directory,fname => output_file);
-
-        --UTL_FILE.FREMOVE(src_dir_name,output_file||'_debug');
-        --UTL_FILE.FREMOVE(src_dir_name,output_file);
 
         RETURN stdout;
     END run;
@@ -287,7 +287,7 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
         num_commits := TO_NUMBER(REPLACE(run_git( repo, args( 'rev-list', '--count', 'HEAD' ), debug ),CHR(10)));
         RETURN branch_name;
     EXCEPTION WHEN VALUE_ERROR
-              THEN RAISE_APPLICATION_ERROR( -20001, 'La rama '||branch_name||' no tiene ningún COMMIT. Debe hacer COMMIT antes de poder realizar esta operación.' );
+              THEN RAISE_APPLICATION_ERROR( -20001, 'The branch '||branch_name||' doesn''t have any COMMIT. You must COMMIT at least once before calling this function.' );
     END current_branch_name;
 
     FUNCTION review( address VARCHAR2, debug IN OUT CLOB ) RETURN CLOB
@@ -333,3 +333,5 @@ BEGIN
         track( list_of_objects,'https://github.com/fejnartal/plugit' );
     END;
 END plugit;
+
+
