@@ -55,7 +55,7 @@ Therefore he/she will be forced to follow team-conventions regarding naming, all
 # Object locking and other strategies:
 These utilities are not designed to allow multi-user collaboration in a shared database.
 
-Moreover, I'd advise against this practice and strongly believe that there are better solutions to the problem
+Moreover, I'd advise against this practice as I strongly believe that there are better solutions to the problem
 
 (Using some version control system together with some automatic provisining tool to allow every single developer to work on his/her own copy of the database).
 
