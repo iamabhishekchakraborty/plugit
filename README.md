@@ -46,13 +46,17 @@ The source code below, is an example to allow every single object inside the "SA
 ```
 
 Place this code in the [INITIALIZATION SECTION](http://awads.net/wp/2005/06/29/oracle-plsql-package-initialization/) of the PLUGIT package.
+
 The idea behind this strategy is that, when deploying to production, ONLY objects matched by these queries will be accepted and compiled.
+
 When a new developer joins your team and clones your custom version of this repository, he/she will also be cloning these Query-Selectors.
 Therefore he/she will be forced to follow team-conventions regarding naming, allowed schemas, types, etc. 
 
 # Object locking and other strategies:
 These utilities are not designed to allow multi-user collaboration in a shared database.
+
 Moreover, I'd advise against this practice and strongly believe that there are better solutions to the problem
+
 (Using some version control system together with some automatic provisining tool to allow every single developer to work on his/her own copy of the database).
 
 Future work to this tool will include the development of a series of companion utilities to try to solve related problems such as:
