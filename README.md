@@ -8,38 +8,56 @@ PL/SQL utilities to Git version control your Oracle source code
 
 # Current features:
  - Fully OracleXE 11g compatible
- - Auto initialize Git repository and required scripts (or call git.init on-demand)
+ - Auto initialize Git repository
  - Uses Bash shell scripts (to get Git stdout/stderr messages)
  - Convention over configuration
- - Automatically save new sources to Git repository
- - Plugit expect to find Git binaries in /usr/bin/git (easily customizable)
- - Naive interface to several Git commands, such as:
-   - commit (By default, Plugit uses current USERNAME and HOSTNAME as the commiter info)
-   - status
-   - reset
-   - add
-   - rm
- - Call any Git command via the git.run function
+ - Query-based method to specify "versionable" objects
+ - Support for multiple repositories
 
 # Future work:
+ - Improve performance
  - Test older versions of OracleDB for compatibility issues
  - Add support for other Shells and Operating Systems
- - Provide a mechanism to easily clone an existing repository
- - Think of a better repository structure and filenaming conventions
+ - Implement cloning/restoring functionality 
  - Implement some strategy to automatically and effectively compile sources from a cloned repository
- - Research strategies for pushing/pulling from a remote repository
+ - Research strategies for pushing/pulling from a remote repository (public+private ssh key?)
  - Syncing multiple databases using a Git workflow such as branching/merging/fetching...
+ - Message internationalization
 
-# Installation
+# Installation:
 ```sql
 CREATE DIRECTORY VERSION_CONTROL AS '/path/to/your/desired/repository/path';
 ```
 Compile these sources in your desired schema.
-If you want your users to be able to manually call Git commands such as commit, rm, etc. grant them permissions to the GIT package.
 
-# Proposed Workflow
-These utilities are not inherently designed to allow multi-user collaboration in a shared database.
-Future work will include the development of a series of companion utilities that should solve related problems such as:
+# Configuration
+This tool favours a Query-based approach for specifying the "versionable" objects.
+The source code below, is an example to allow every single object inside the "SAMPLE" schema to be version-controlled.
+```sql
+    DECLARE  list_of_objects tracked_objects;
+    BEGIN
+        SELECT object_id
+        BULK COLLECT INTO list_of_objects
+        FROM all_objects
+        WHERE owner = 'SAMPLE';
+
+        track( list_of_objects,'https://your/repo/url/here.git' );
+    END;
+```
+
+Place this code in the [INITIALIZATION SECTION](http://awads.net/wp/2005/06/29/oracle-plsql-package-initialization/) of the PLUGIT package.
+The idea behind this strategy is that, when deploying to production, ONLY objects matched by these queries will be accepted and compiled.
+When a new developer joins your team and clones your custom version of this repository, he/she will also be cloning these Query-Selectors.
+Therefore he/she will be forced to follow team-conventions regarding naming, allowed schemas, types, etc. 
+
+# Object locking and other strategies:
+These utilities are not designed to allow multi-user collaboration in a shared database.
+Moreover, I'd advise against this practice and strongly believe that there are better solutions to the problem
+(Using some version control system together with some automatic provisining tool to allow every single developer to work on his/her own copy of the database).
+
+Future work to this tool will include the development of a series of companion utilities to try to solve related problems such as:
+ - Unit testing
+ - Conditional Debugging/Logging
  - Multi-user development
  - Continuous deployment
- - 3rd party services?
+ - Integration with 3rd party services?
