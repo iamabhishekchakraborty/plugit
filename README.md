@@ -15,6 +15,9 @@ PL/SQL utilities to Git version control your Oracle source code
  - Support for multiple repositories
 
 # Future work:
+ - Allow to easily customize objects_filename/filepath
+ - Opt for a "Fixed schema" model in which objects are stored prefixed thier schema?
+ - Allow calling "store" with a customized list of objects (instead of all tracked objects)
  - Improve performance
  - Test older versions of OracleDB for compatibility issues
  - Add support for other Shells and Operating Systems
