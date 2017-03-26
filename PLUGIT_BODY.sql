@@ -251,7 +251,6 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
 
     FUNCTION store( address VARCHAR2, message VARCHAR2 ) RETURN CLOB
     IS  repo tracked_repo := managed_repos(address);
-        dummy CLOB;
     BEGIN
         debug := NULL;
 
@@ -272,8 +271,7 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
     END store;
 
     FUNCTION temp_branch( repo tracked_repo, empty BOOLEAN ) RETURN VARCHAR2
-    IS  cur_object_properties all_objects%ROWTYPE;
-        branch_name CONSTANT VARCHAR2(500) := 'TEMP_'||TO_CHAR(SYSTIMESTAMP,'YYYYMMDD_HH24MISS_FF4');
+    IS  branch_name CONSTANT VARCHAR2(500) := 'TEMP_'||TO_CHAR(SYSTIMESTAMP,'YYYYMMDD_HH24MISS_FF4');
     BEGIN
         run_git( repo, args( 'checkout', '--orphan', branch_name ));
 
@@ -285,24 +283,23 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
     END temp_branch;
 
     FUNCTION current_branch_name( repo tracked_repo ) RETURN VARCHAR2
-    IS  num_commits NUMBER;
-        branch_name VARCHAR2(500);
+    IS  branch_name VARCHAR2(500);
     BEGIN
         branch_name := REPLACE(run_git( repo, args( 'symbolic-ref', '--short', 'HEAD' )),CHR(10));
-        num_commits := TO_NUMBER(REPLACE(run_git( repo, args( 'rev-list', '--count', 'HEAD' )),CHR(10)));
+        debug := debug || 'Finding out if current branch '|| branch_name || ' has any commits.'
+              || 'Found: '|| TO_NUMBER(REPLACE(run_git( repo, args( 'rev-list', '--count', 'HEAD' )),CHR(10)));
+
         RETURN branch_name;
     EXCEPTION WHEN VALUE_ERROR
               THEN RAISE_APPLICATION_ERROR( -20001, 'The branch '||branch_name||' doesn''t have any COMMIT. You must COMMIT at least once before calling this function.' );
     END current_branch_name;
 
     FUNCTION review( address VARCHAR2 ) RETURN CLOB
-    IS  cur_object_properties all_objects%ROWTYPE;
-        curr_branch VARCHAR2(500);
+    IS  curr_branch VARCHAR2(500);
         temp1_branch VARCHAR2(500);
         temp2_branch VARCHAR2(500);
         ret CLOB;
         repo tracked_repo := managed_repos(address);
-        dummy CLOB;
     BEGIN
         debug := NULL;
 
