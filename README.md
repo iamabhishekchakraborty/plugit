@@ -15,6 +15,7 @@ PL/SQL utilities to Git version control your Oracle source code
  - Support for multiple repositories
 
 # Future work:
+ - Primary goal: Use Plugit to version control its own source
  - Allow to easily customize objects_filename/filepath
  - Opt for a "Fixed schema" model in which objects are stored prefixed thier schema?
  - Allow calling "store" with a customized list of objects (instead of all tracked objects)
