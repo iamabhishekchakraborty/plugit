@@ -57,9 +57,14 @@ When a new developer joins your team and clones your custom version of this repo
 Therefore he/she will be forced to follow team-conventions regarding naming, allowed schemas, types, etc. 
 
 # How to use
-To be able to call the exposed functions in this tool you must login with a user able to run EXTERNAL JOBS. Otherwise, the following error will be thrown:
+To be able to call the exposed functions in this tool you must login with a user able to run EXTERNAL JOBS.
+
+Otherwise, the following error will be thrown:
+
 ```ORA-27369: job of type EXECUTABLE failed with exit code: 274666```
+
 You can use SYS user for this task, as it has full permission to run EXTERNAL JOBS.
+
 **Remember - These utilities are currently in development and aren't ready for production.**
 
 # Object locking and other strategies:
