@@ -4,7 +4,8 @@ IS
     SUBTYPE dirpath IS all_directories.directory_path%TYPE;
     SUBTYPE repo_address IS VARCHAR2(300);
 
-    TYPE tracked_objects  IS TABLE OF all_objects.object_id%TYPE;
+    TYPE args IS TABLE OF VARCHAR2(400);
+    TYPE tracked_objects IS TABLE OF all_objects.object_id%TYPE;
     TYPE tracked_repo IS RECORD (
       address     repo_address
     , directory   dirname
@@ -14,15 +15,17 @@ IS
     TYPE tracked_repos IS TABLE OF tracked_repo INDEX BY repo_address;
     managed_repos tracked_repos;
 
-    TYPE args IS TABLE OF VARCHAR2(400);
-
-    slash       CONSTANT VARCHAR2(1)  := CASE WHEN INSTR(UPPER(dbms_utility.port_string),'WIN') > 0 THEN '\' ELSE '/' END;
-    git_wrapper CONSTANT VARCHAR2(30) := 'git_wrapper';
     git_binary  CONSTANT dirpath      := 'git';
+    git_wrapper CONSTANT VARCHAR2(30) := 'git_wrapper';
+    slash       CONSTANT VARCHAR2(1)  := CASE WHEN INSTR(UPPER(dbms_utility.port_string),'WIN') > 0 THEN '\' ELSE '/' END;
 
-    PROCEDURE log(message VARCHAR2)
-    IS BEGIN debug := debug || message;
-    END log;
+    debug CLOB;
+
+    FUNCTION log RETURN CLOB IS
+    BEGIN RETURN debug; END log;
+
+    PROCEDURE log( message VARCHAR2 ) IS
+    BEGIN debug := debug || message; END log;
 
     FUNCTION shell(directory dirname) RETURN VARCHAR2
     IS  script_code CLOB;
@@ -39,7 +42,7 @@ shift
 shift
 shift
 outputText=$("$binCommand" "$@" 2>'||chr(38)||'1)
-echo "$outputText" > "$workingDir""$outputFile" 
+echo "$outputText" > "$workingDir""$outputFile"
 echo "$debugText"  > "$workingDir""$outputFile"_debug
 ';
     BEGIN
@@ -221,7 +224,7 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
         run_git( repo, args( 'add', src_dir_path||slash||object.owner||slash||object.object_type||slash||object.object_name));
     END add;
 
-    PROCEDURE git_commit( repo tracked_repo, message VARCHAR2 )
+    FUNCTION git_commit( repo tracked_repo, message VARCHAR2 ) RETURN CLOB
     IS
     BEGIN
         IF repo.object_ids.COUNT > 0
@@ -232,7 +235,7 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
             END LOOP;
         END IF;
 
-        run_git( repo,
+        RETURN run_git( repo,
           args
           ( '-c', 'user.name=' ||USER
           , '-c', 'user.email='||UTL_INADDR.get_host_name
@@ -242,7 +245,11 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
         );
     END git_commit;
 
-    PROCEDURE store( address VARCHAR2, message VARCHAR2 )
+    PROCEDURE git_commit( repo tracked_repo, message VARCHAR2 )
+    IS dummy CLOB; BEGIN dummy := git_commit( repo, message );
+    END git_commit;
+
+    FUNCTION store( address VARCHAR2, message VARCHAR2 ) RETURN CLOB
     IS  repo tracked_repo := managed_repos(address);
         dummy CLOB;
     BEGIN
@@ -257,7 +264,11 @@ echo "$debugText"  > "$workingDir""$outputFile"_debug
                 save( repo, repo.object_ids(cur_object));
             END LOOP;
         END IF;
-        git_commit( repo, message );
+        RETURN git_commit( repo, message );
+    END store;
+
+    PROCEDURE store( address VARCHAR2, message VARCHAR2 )
+    IS dummy CLOB; BEGIN dummy := store( address, message );
     END store;
 
     FUNCTION temp_branch( repo tracked_repo, empty BOOLEAN ) RETURN VARCHAR2
@@ -322,5 +333,5 @@ BEGIN
 
         track( list_of_objects,'https://github.com/fejnartal/plugit' );
     END;
-END plugit;
+END plugit;				 
 
